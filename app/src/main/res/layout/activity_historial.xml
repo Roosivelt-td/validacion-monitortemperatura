@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#1a1a2e"
+    android:padding="16dp">
+
+    <!-- Título -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="HISTORIAL DE LECTURAS"
+        android:textColor="#ffffff"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp"
+        android:layout_gravity="center"/>
+
+    <!-- Lista de lecturas -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerHistorial"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <!-- Botón para borrar historial -->
+    <Button
+        android:id="@+id/btnBorrarHistorial"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Borrar Historial"
+        android:textColor="#ffffff"
+        android:backgroundTint="#ff4444"
+        android:layout_marginTop="16dp" />
+
+    <!-- Botón para volver -->
+    <Button
+        android:id="@+id/btnVolver"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Volver"
+        android:textColor="#ffffff"
+        android:backgroundTint="#0088ff"
+        android:layout_marginTop="8dp" />
+
+</LinearLayout>
