@@ -4,11 +4,7 @@ plugins {
 
 android {
     namespace = "com.sigcpa.monitortemperatura"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.sigcpa.monitortemperatura"
@@ -59,4 +55,11 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
     implementation("androidx.activity:activity-ktx:1.8.2")
 
+    // Room Database
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    annotationProcessor("androidx.room:room-compiler:2.6.1")
+
+    // Fragment KTX
+    implementation("androidx.fragment:fragment-ktx:1.6.2")
 }

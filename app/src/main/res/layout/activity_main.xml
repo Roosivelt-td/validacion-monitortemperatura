@@ -48,14 +48,29 @@
                 android:textColor="#cccccc"
                 android:textSize="18sp" />
 
-            <TextView
-                android:id="@+id/txtTemperatura"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="-- °C"
-                android:textColor="@color/white"
-                android:textSize="48sp"
-                android:textStyle="bold" />
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/txtTemperatura"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="-- °C"
+                    android:textColor="@color/white"
+                    android:textSize="48sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/txtIconoClima"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text=""
+                    android:textSize="32sp" />
+            </LinearLayout>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
@@ -121,6 +136,21 @@
         android:textStyle="bold"
         app:cornerRadius="30dp"
         app:layout_constraintTop_toBottomOf="@id/txtEstado" />
+
+    <!-- Botón para ver historial -->
+    <Button
+        android:id="@+id/btnHistorial"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="12dp"
+        android:backgroundTint="#00cc66"
+        android:text="Ver Historial"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:cornerRadius="30dp"
+        app:layout_constraintTop_toBottomOf="@id/btnConectar" />
 
     <!-- Oculto para mantener compatibilidad si se usa -->
     <TextView
