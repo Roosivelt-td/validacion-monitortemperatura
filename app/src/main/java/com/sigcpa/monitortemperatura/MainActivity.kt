@@ -221,4 +221,7 @@ class MainActivity : AppCompatActivity() {
             // Ignorar
         }
     }
+    fun simularRecepcionDato(dato: String) {
+        procesarDatoRecibido(dato)
+    }
 }
