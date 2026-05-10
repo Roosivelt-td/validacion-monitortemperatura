@@ -44,4 +44,7 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
+
+    // Para manejar la comunicación serial Bluetooth
+    implementation("com.github.mik3y:usb-serial-for-android:3.7.0")
 }
