@@ -43,8 +43,22 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private var enPausaAlerta = false
 
+    // ============================================================
+    // MÉTODO PÚBLICO: Procesa el dato con pausa de alerta
+    // ============================================================
     fun procesarDatoRecibido(dato: String) {
-        if (enPausaAlerta) return
+        procesarDatoRecibidoInterno(dato, conPausa = true)
+    }
+
+    // ============================================================
+    // MÉTODO PARA PRUEBAS: Permite saltar la pausa en pruebas
+    // ============================================================
+    fun procesarDatoParaPrueba(dato: String) {
+        procesarDatoRecibidoInterno(dato, conPausa = false)
+    }
+
+    private fun procesarDatoRecibidoInterno(dato: String, conPausa: Boolean) {
+        if (conPausa && enPausaAlerta) return
 
         val datoLimpio = dato.trim()
         if (datoLimpio.isEmpty()) {
@@ -79,10 +93,39 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         when {
             temperatura >= 35.0 -> {
                 mostrarAlerta(temperatura)
-                iniciarPausaAlerta()
+                if (conPausa) iniciarPausaAlerta()
             }
             else -> mostrarNormal(temperatura)
         }
+    }
+
+    // ============================================================
+    // FUNCIONES PURAS PARA PRUEBAS UNITARIAS
+    // ============================================================
+
+    /**
+     * Convierte Celsius a Fahrenheit
+     * F = (C × 9/5) + 32
+     */
+    fun celsiusAFahrenheit(celsius: Double): Double {
+        return (celsius * 9.0 / 5.0) + 32.0
+    }
+
+    /**
+     * Determina si una temperatura está en rango de alerta
+     */
+    fun esTemperaturaAlerta(temperatura: Double): Boolean {
+        return temperatura >= 35.0
+    }
+
+    /**
+     * Valida si un string es un dato de temperatura válido
+     */
+    fun esDatoValido(dato: String): Boolean {
+        val limpio = dato.trim()
+        if (limpio.isEmpty()) return false
+        val partes = limpio.split(",", ";", " ")
+        return partes.getOrNull(0)?.toDoubleOrNull() != null
     }
 
     private fun obtenerColorEIcono(temp: Double): Pair<Int, String> {

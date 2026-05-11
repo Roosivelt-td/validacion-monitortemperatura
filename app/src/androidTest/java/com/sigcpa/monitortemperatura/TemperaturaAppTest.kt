@@ -1,10 +1,13 @@
 package com.sigcpa.monitortemperatura
 
+import android.Manifest
+import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.rule.GrantPermissionRule
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -12,77 +15,81 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class TemperaturaAppTest {
 
+    // ============================================================
+    // OTORGAR PERMISOS AUTOMÁTICAMENTE DURANTE LAS PRUEBAS
+    // ============================================================
+    @get:Rule
+    val grantPermissionRule: GrantPermissionRule = GrantPermissionRule.grant(
+        Manifest.permission.BLUETOOTH,
+        Manifest.permission.BLUETOOTH_ADMIN,
+        Manifest.permission.BLUETOOTH_CONNECT,
+        Manifest.permission.BLUETOOTH_SCAN,
+        Manifest.permission.ACCESS_FINE_LOCATION
+    )
+
+    // ============================================================
+    // REGLA DE ACTIVITY
+    // ============================================================
     @get:Rule
     val activityRule = ActivityScenarioRule(MainActivity::class.java)
 
     // ============================================================
-    // TC-01: Temperatura normal
+    // TC-01: Temperatura normal (22°C)
     // ============================================================
     @Test
     fun testTemperaturaNormal_MuestraCorrectamente() {
-        // Simular recepción de "22"
         activityRule.scenario.onActivity { activity ->
             activity.simularRecepcionDato("22")
         }
 
-        // Verificar que el texto de temperatura es "22.0 °C"
         onView(withId(R.id.txtTemperatura))
             .check(matches(withText("22.0 °C")))
 
-        // Verificar que el mensaje de alerta NO está visible
         onView(withId(R.id.txtMensajeAlerta))
             .check(matches(withEffectiveVisibility(Visibility.GONE)))
     }
 
     // ============================================================
-    // TC-02: Calor extremo (ROJO + ALERTA) - Valor límite 35°C
+    // TC-02: Calor extremo (35°C) - Valor límite
     // ============================================================
     @Test
     fun testCalorExtremo_MuestraRojoYAlerta() {
-        // Simular recepción de "35"
         activityRule.scenario.onActivity { activity ->
             activity.simularRecepcionDato("35")
         }
 
-        // Verificar que muestra "35.0 °C"
         onView(withId(R.id.txtTemperatura))
             .check(matches(withText("35.0 °C")))
 
-        // Verificar que el mensaje de alerta está visible
         onView(withId(R.id.txtMensajeAlerta))
             .check(matches(isDisplayed()))
 
-        // Verificar el texto exacto de la alerta
         onView(withId(R.id.txtMensajeAlerta))
             .check(matches(withText("¡ALERTA: CALOR EXTREMO!")))
     }
 
     // ============================================================
-    // TC-03: Entrada vacía (ERROR)
+    // TC-03: Entrada vacía → Error
     // ============================================================
     @Test
     fun testEntradaVacia_MuestraError() {
-        // Simular recepción de cadena vacía
         activityRule.scenario.onActivity { activity ->
             activity.simularRecepcionDato("")
         }
 
-        // Verificar que el texto de temperatura muestra error
         onView(withId(R.id.txtTemperatura))
             .check(matches(withText("Error")))
     }
 
     // ============================================================
-    // TC-04: Entrada no numérica (ERROR)
+    // TC-04: Entrada corrupta → Error
     // ============================================================
     @Test
     fun testEntradaCorrupta_MuestraError() {
-        // Simular recepción de caracteres "err"
         activityRule.scenario.onActivity { activity ->
             activity.simularRecepcionDato("err")
         }
 
-        // Verificar que el texto de temperatura muestra error
         onView(withId(R.id.txtTemperatura))
             .check(matches(withText("Error")))
     }
