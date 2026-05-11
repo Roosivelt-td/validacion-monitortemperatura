@@ -17,6 +17,10 @@
     <!-- Permiso de ubicación (necesario para escanear Bluetooth) -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
+    <!-- Permiso para la cámara (necesario para el escáner QR) -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+
     <!-- ============================================ -->
     <!-- APLICACIÓN                                   -->
     <!-- ============================================ -->
@@ -42,6 +46,16 @@
         <activity
             android:name=".HistorialActivity"
             android:label="Historial"
+            android:exported="false" />
+
+        <activity
+            android:name=".QrScannerActivity"
+            android:label="Escanear QR"
+            android:exported="false" />
+
+        <activity
+            android:name=".GenerarQrActivity"
+            android:label="Generar QR"
             android:exported="false" />
 
     </application>
