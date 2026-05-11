@@ -64,4 +64,15 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
     testImplementation("androidx.arch.core:core-testing:2.2.0")
+
+    // CameraX (para la cámara)
+    implementation("androidx.camera:camera-camera2:1.3.1")
+    implementation("androidx.camera:camera-lifecycle:1.3.1")
+    implementation("androidx.camera:camera-view:1.3.1")
+
+    // ML Kit - Escaneo de códigos de barras (incluye QR)
+    implementation("com.google.mlkit:barcode-scanning:17.2.0")
+
+    // ZXing - Para generar QR
+    implementation("com.google.zxing:core:3.5.2")
 }

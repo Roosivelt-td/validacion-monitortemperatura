@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#1a1a2e"
+    android:padding="24dp"
+    android:gravity="center">
+
+    <!-- Título -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="GENERADOR DE QR"
+        android:textColor="#ffffff"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="24dp" />
+
+    <!-- Campo de texto para el ID de la carga -->
+    <EditText
+        android:id="@+id/etCargaId"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:hint="Ingresa texto para el QR"
+        android:textColor="#ffffff"
+        android:textColorHint="#888888"
+        android:background="#2d2d44"
+        android:padding="16dp"
+        android:textSize="16sp"
+        android:inputType="text"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Información de la lectura (visible cuando viene del historial) -->
+    <TextView
+        android:id="@+id/txtInfoQR"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textColor="#ffffff"
+        android:textSize="16sp"
+        android:layout_marginBottom="16dp"
+        android:gravity="center"
+        android:visibility="gone" />
+
+    <!-- Vista previa del QR generado -->
+    <ImageView
+        android:id="@+id/imgQR"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:background="#ffffff"
+        android:padding="16dp"
+        android:layout_marginBottom="24dp"
+        android:contentDescription="Código QR generado" />
+
+    <!-- Botón para generar -->
+    <Button
+        android:id="@+id/btnGenerarQR"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="Generar QR Manual"
+        android:textColor="#ffffff"
+        android:backgroundTint="#00cc66"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="12dp" />
+
+    <!-- Botón para volver -->
+    <Button
+        android:id="@+id/btnVolverGenerar"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="Volver"
+        android:textColor="#ffffff"
+        android:backgroundTint="#0088ff"
+        android:textSize="18sp" />
+
+</LinearLayout>

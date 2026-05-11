@@ -1,8 +1,10 @@
 package com.sigcpa.monitortemperatura
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import java.text.SimpleDateFormat
@@ -21,6 +23,7 @@ class LecturaAdapter(
         val txtIcono: TextView = view.findViewById(R.id.txtIconoHistorial)
         val txtHum: TextView = view.findViewById(R.id.txtHumHistorial)
         val txtHora: TextView = view.findViewById(R.id.txtHoraHistorial)
+        val btnVerQR: Button = view.findViewById(R.id.btnVerQR)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -53,7 +56,23 @@ class LecturaAdapter(
 
         // Mostrar hora formateada (HH:mm:ss)
         val sdf = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
-        holder.txtHora.text = sdf.format(Date(lectura.timestamp))
+        val horaStr = sdf.format(Date(lectura.timestamp))
+        holder.txtHora.text = horaStr
+
+        // Botón: Ver QR de esta lectura
+        holder.btnVerQR.setOnClickListener {
+            val context = holder.itemView.context
+            val intent = Intent(context, GenerarQrActivity::class.java)
+            
+            // Datos que irán dentro del QR (Legible por cualquier app de cámara)
+            val datosQR = "Monitor Ambiental\nTemp: ${lectura.temperatura}°C\nHum: ${lectura.humedad}%\nHora: $horaStr"
+            intent.putExtra("datos_qr", datosQR)
+            intent.putExtra("temperatura", lectura.temperatura)
+            intent.putExtra("humedad", lectura.humedad)
+            intent.putExtra("hora", horaStr)
+            
+            context.startActivity(intent)
+        }
     }
 
     override fun getItemCount(): Int = lecturas.size

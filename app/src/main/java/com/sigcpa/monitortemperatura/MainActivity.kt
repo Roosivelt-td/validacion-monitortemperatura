@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
 import android.content.pm.PackageManager
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
@@ -49,6 +50,7 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val REQUEST_BLUETOOTH = 1
         private val UUID_HC05 = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
+        private const val REQUEST_QR = 200
     }
 
     // ============================================================
@@ -86,6 +88,20 @@ class MainActivity : AppCompatActivity() {
         val btnHistorial: Button = findViewById(R.id.btnHistorial)
         btnHistorial.setOnClickListener {
             val intent = android.content.Intent(this, HistorialActivity::class.java)
+            startActivity(intent)
+        }
+
+        // Botón escanear QR
+        val btnEscanearQR: Button = findViewById(R.id.btnEscanearQR)
+        btnEscanearQR.setOnClickListener {
+            val intent = android.content.Intent(this, QrScannerActivity::class.java)
+            startActivityForResult(intent, REQUEST_QR)
+        }
+
+        // Botón generar QR
+        val btnGenerarQR: Button = findViewById(R.id.btnGenerarQR)
+        btnGenerarQR.setOnClickListener {
+            val intent = android.content.Intent(this, GenerarQrActivity::class.java)
             startActivity(intent)
         }
 
@@ -241,6 +257,17 @@ class MainActivity : AppCompatActivity() {
     // ============================================================
     fun simularRecepcionDato(dato: String) {
         viewModel.procesarDatoRecibido(dato)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        // La lógica de mostrar resultados ahora está dentro de QrScannerActivity para mayor claridad visual
+        if (requestCode == REQUEST_QR && resultCode == RESULT_OK) {
+            val qrText = data?.getStringExtra(QrScannerActivity.EXTRA_QR_RESULT) ?: ""
+            if (qrText.isNotEmpty()) {
+                Toast.makeText(this, "Escaneo completado", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     // ============================================================
