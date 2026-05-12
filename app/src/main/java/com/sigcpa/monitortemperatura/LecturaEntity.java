@@ -1,6 +1,7 @@
 package com.sigcpa.monitortemperatura;
 
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "lecturas")
@@ -14,6 +15,7 @@ public class LecturaEntity {
 
     public LecturaEntity() {}
 
+    @Ignore
     public LecturaEntity(double temperatura, double humedad) {
         this.temperatura = temperatura;
         this.humedad = humedad;

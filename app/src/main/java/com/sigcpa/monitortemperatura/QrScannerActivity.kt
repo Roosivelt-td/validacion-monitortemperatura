@@ -39,6 +39,18 @@ class QrScannerActivity : AppCompatActivity() {
     
     private var qrDetectado = false
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_CAMERA) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                iniciarCamara()
+            } else {
+                Toast.makeText(this, "Permiso de cámara denegado", Toast.LENGTH_SHORT).show()
+                finish()
+            }
+        }
+    }
+
     companion object {
         private const val REQUEST_CAMERA = 100
         const val EXTRA_QR_RESULT = "qr_result"
@@ -47,6 +59,8 @@ class QrScannerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_qr_scanner)
+        
+        Toast.makeText(this, "Iniciando Escáner...", Toast.LENGTH_SHORT).show()
 
         // Inicializar UI
         previewView = findViewById(R.id.previewView)
@@ -104,37 +118,55 @@ class QrScannerActivity : AppCompatActivity() {
     private fun iniciarCamara() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
         cameraProviderFuture.addListener({
-            val cameraProvider = cameraProviderFuture.get()
-            val preview = Preview.Builder().build().also { it.setSurfaceProvider(previewView.surfaceProvider) }
-            val imageAnalysis = ImageAnalysis.Builder()
-                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                .build()
+            try {
+                val cameraProvider = cameraProviderFuture.get()
+                
+                // Configurar el Preview
+                previewView.implementationMode = PreviewView.ImplementationMode.COMPATIBLE
+                previewView.scaleType = PreviewView.ScaleType.FILL_CENTER
+                
+                val preview = Preview.Builder().build().also {
+                    it.setSurfaceProvider(previewView.surfaceProvider)
+                }
 
-            imageAnalysis.setAnalyzer(Executors.newSingleThreadExecutor()) { imageProxy ->
-                if (!qrDetectado) {
-                    val mediaImage = imageProxy.image
-                    if (mediaImage != null) {
-                        val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
-                        val scanner = BarcodeScanning.getClient()
-                        scanner.process(image)
-                            .addOnSuccessListener { barcodes ->
-                                for (barcode in barcodes) {
-                                    val texto = barcode.displayValue ?: ""
-                                    if (texto.isNotEmpty()) {
-                                        qrDetectado = true
-                                        runOnUiThread { procesarTextoQR(texto) }
+                val imageAnalysis = ImageAnalysis.Builder()
+                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                    .build()
+
+                imageAnalysis.setAnalyzer(Executors.newSingleThreadExecutor()) { imageProxy ->
+                    if (!qrDetectado) {
+                        val mediaImage = imageProxy.image
+                        if (mediaImage != null) {
+                            val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+                            val scanner = BarcodeScanning.getClient()
+                            scanner.process(image)
+                                .addOnSuccessListener { barcodes ->
+                                    for (barcode in barcodes) {
+                                        val texto = barcode.displayValue ?: ""
+                                        if (texto.isNotEmpty()) {
+                                            qrDetectado = true
+                                            runOnUiThread { procesarTextoQR(texto) }
+                                        }
                                     }
                                 }
-                            }
-                            .addOnCompleteListener { imageProxy.close() }
-                    } else { imageProxy.close() }
-                } else { imageProxy.close() }
-            }
-            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-            try {
+                                .addOnCompleteListener { imageProxy.close() }
+                        } else {
+                            imageProxy.close()
+                        }
+                    } else {
+                        imageProxy.close()
+                    }
+                }
+
+                val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+
                 cameraProvider.unbindAll()
                 cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalysis)
-            } catch (e: Exception) { }
+                
+            } catch (e: Exception) {
+                Toast.makeText(this, "Error al iniciar cámara: ${e.message}", Toast.LENGTH_LONG).show()
+                e.printStackTrace()
+            }
         }, ContextCompat.getMainExecutor(this))
     }
 

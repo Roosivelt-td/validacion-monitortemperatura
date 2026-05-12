@@ -4,13 +4,15 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothManager
 import android.bluetooth.BluetoothSocket
-import android.content.pm.PackageManager
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -42,15 +44,25 @@ class MainActivity : AppCompatActivity() {
     // ============================================================
     // BLUETOOTH
     // ============================================================
-    private lateinit var bluetoothAdapter: BluetoothAdapter
+    private var bluetoothAdapter: BluetoothAdapter? = null
     private var bluetoothSocket: BluetoothSocket? = null
     private var inputStream: InputStream? = null
     private var conectado = false
 
+    // Activity Result Launcher para QR
+    private val qrScannerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val data = result.data
+            val qrText = data?.getStringExtra(QrScannerActivity.EXTRA_QR_RESULT) ?: ""
+            if (qrText.isNotEmpty()) {
+                Toast.makeText(this, "Escaneo completado", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
     companion object {
         private const val REQUEST_BLUETOOTH = 1
         private val UUID_HC05 = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
-        private const val REQUEST_QR = 200
     }
 
     // ============================================================
@@ -74,7 +86,8 @@ class MainActivity : AppCompatActivity() {
         observarViewModel()
 
         // Bluetooth
-        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+        val bluetoothManager = getSystemService(BLUETOOTH_SERVICE) as BluetoothManager
+        bluetoothAdapter = bluetoothManager.adapter
         if (bluetoothAdapter == null) {
             Toast.makeText(this, "Este dispositivo no tiene Bluetooth", Toast.LENGTH_LONG).show()
             return
@@ -87,21 +100,21 @@ class MainActivity : AppCompatActivity() {
         // Botón historial
         val btnHistorial: Button = findViewById(R.id.btnHistorial)
         btnHistorial.setOnClickListener {
-            val intent = android.content.Intent(this, HistorialActivity::class.java)
+            val intent = Intent(this, HistorialActivity::class.java)
             startActivity(intent)
         }
 
         // Botón escanear QR
         val btnEscanearQR: Button = findViewById(R.id.btnEscanearQR)
         btnEscanearQR.setOnClickListener {
-            val intent = android.content.Intent(this, QrScannerActivity::class.java)
-            startActivityForResult(intent, REQUEST_QR)
+            val intent = Intent(this, QrScannerActivity::class.java)
+            qrScannerLauncher.launch(intent)
         }
 
         // Botón generar QR
         val btnGenerarQR: Button = findViewById(R.id.btnGenerarQR)
         btnGenerarQR.setOnClickListener {
-            val intent = android.content.Intent(this, GenerarQrActivity::class.java)
+            val intent = Intent(this, GenerarQrActivity::class.java)
             startActivity(intent)
         }
 
@@ -189,14 +202,16 @@ class MainActivity : AppCompatActivity() {
 
         txtEstado.text = "Bluetooth conectando..."
 
-        val dispositivosVinculados: Set<BluetoothDevice> = bluetoothAdapter.bondedDevices
+        val dispositivosVinculados: Set<BluetoothDevice>? = bluetoothAdapter?.bondedDevices
         var dispositivoHC05: BluetoothDevice? = null
 
-        for (d in dispositivosVinculados) {
-            if (d.name.contains("HC-05", ignoreCase = true) ||
-                d.name.contains("HC-06", ignoreCase = true)) {
-                dispositivoHC05 = d
-                break
+        if (dispositivosVinculados != null) {
+            for (d in dispositivosVinculados) {
+                if (d.name.contains("HC-05", ignoreCase = true) ||
+                    d.name.contains("HC-06", ignoreCase = true)) {
+                    dispositivoHC05 = d
+                    break
+                }
             }
         }
 
@@ -257,17 +272,6 @@ class MainActivity : AppCompatActivity() {
     // ============================================================
     fun simularRecepcionDato(dato: String) {
         viewModel.procesarDatoRecibido(dato)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        // La lógica de mostrar resultados ahora está dentro de QrScannerActivity para mayor claridad visual
-        if (requestCode == REQUEST_QR && resultCode == RESULT_OK) {
-            val qrText = data?.getStringExtra(QrScannerActivity.EXTRA_QR_RESULT) ?: ""
-            if (qrText.isNotEmpty()) {
-                Toast.makeText(this, "Escaneo completado", Toast.LENGTH_SHORT).show()
-            }
-        }
     }
 
     // ============================================================
